@@ -45,21 +45,21 @@ Single backend project at repository root:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 Create domain entity base class in src/domain/entities/BaseEntity.ts with id, createdAt, updatedAt, deletedAt
-- [ ] T010 [P] Define PatientRepositoryPort interface in src/domain/ports/PatientRepository.ts
-- [ ] T011 [P] Define ReportRepositoryPort interface in src/domain/ports/ReportRepository.ts
-- [ ] T012 [P] Define AnalysisRepositoryPort interface in src/domain/ports/AnalysisRepository.ts
-- [ ] T013 [P] Define ClinicalNoteRepositoryPort interface in src/domain/ports/ClinicalNoteRepository.ts
-- [ ] T014 [P] Define FileStoragePort interface in src/domain/ports/FileStoragePort.ts
-- [ ] T015 [P] Define AnalysisEnginePort interface in src/domain/ports/AnalysisEnginePort.ts
-- [ ] T016 Create TypeORM DataSource configuration in src/infrastructure/config/database.ts
-- [ ] T017 Create Express application bootstrap in src/api/app.ts with middleware setup
-- [ ] T018 Create main entry point in src/index.ts with server startup and adapter wiring
-- [ ] T019 [P] Create error handler middleware in src/api/middleware/errorHandler.ts
-- [ ] T020 [P] Create validation middleware using class-validator in src/api/middleware/validation.ts
-- [ ] T021 [P] Create file upload middleware using Multer in src/api/middleware/fileUpload.ts with 50MB limit
-- [ ] T022 Create health check endpoint in src/api/routes/health.ts per openapi.yaml
-- [ ] T023 Configure environment loading with dotenv in src/infrastructure/config/Config.ts
+- [X] T009 Create domain entity base class in src/domain/entities/BaseEntity.ts with id, createdAt, updatedAt, deletedAt
+- [X] T010 [P] Define PatientRepositoryPort interface in src/domain/ports/PatientRepository.ts
+- [X] T011 [P] Define ReportRepositoryPort interface in src/domain/ports/ReportRepository.ts
+- [X] T012 [P] Define AnalysisRepositoryPort interface in src/domain/ports/AnalysisRepository.ts
+- [X] T013 [P] Define ClinicalNoteRepositoryPort interface in src/domain/ports/ClinicalNoteRepository.ts
+- [X] T014 [P] Define FileStoragePort interface in src/domain/ports/FileStoragePort.ts
+- [X] T015 [P] Define AnalysisEnginePort interface in src/domain/ports/AnalysisEnginePort.ts
+- [X] T016 Create TypeORM DataSource configuration in src/infrastructure/config/database.ts
+- [X] T017 Create Express application bootstrap in src/api/app.ts with middleware setup
+- [X] T018 Create main entry point in src/index.ts with server startup and adapter wiring
+- [X] T019 [P] Create error handler middleware in src/api/middleware/errorHandler.ts
+- [X] T020 [P] Create validation middleware using class-validator in src/api/middleware/validation.ts
+- [X] T021 [P] Create file upload middleware using Multer in src/api/middleware/fileUpload.ts with 50MB limit
+- [X] T022 Create health check endpoint in src/api/routes/health.ts per openapi.yaml
+- [X] T023 Configure environment loading with dotenv in src/infrastructure/config/Config.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -73,22 +73,22 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 1
 
-- [ ] T024 [P] [US1] Create Patient domain entity in src/domain/entities/Patient.ts with id, medicalRecordNumber, name, dateOfBirth, contactInfo per data-model.md
-- [ ] T025 [US1] Implement PatientService in src/domain/services/PatientService.ts with create, findById, findByMRN, search, listAll methods
+- [X] T024 [P] [US1] Create Patient domain entity in src/domain/entities/Patient.ts with id, medicalRecordNumber, name, dateOfBirth, contactInfo per data-model.md
+- [X] T025 [US1] Implement PatientService in src/domain/services/PatientService.ts with create, findById, findByMRN, search, listAll methods
 
 ### Infrastructure Layer for User Story 1
 
-- [ ] T026 [P] [US1] Create PatientEntity TypeORM entity in src/infrastructure/persistence/entities/PatientEntity.ts per data-model.md schema
-- [ ] T027 [US1] Generate TypeORM migration CreatePatientsTable in migrations/ per data-model.md
-- [ ] T028 [US1] Implement InMemoryPatientRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryPatientRepository.ts
-- [ ] T029 [US1] Implement TypeORMPatientRepository production adapter in src/infrastructure/persistence/repositories/TypeORMPatientRepository.ts
+- [X] T026 [P] [US1] Create PatientEntity TypeORM entity in src/infrastructure/persistence/entities/PatientEntity.ts per data-model.md schema
+- [X] T027 [US1] Generate TypeORM migration CreatePatientsTable in migrations/ per data-model.md
+- [X] T028 [US1] Implement InMemoryPatientRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryPatientRepository.ts
+- [X] T029 [US1] Implement TypeORMPatientRepository production adapter in src/infrastructure/persistence/repositories/TypeORMPatientRepository.ts
 
 ### API Layer for User Story 1
 
-- [ ] T030 [P] [US1] Create CreatePatientDto in src/api/dto/CreatePatientDto.ts with class-validator decorators
-- [ ] T031 [P] [US1] Create PatientResponseDto in src/api/dto/PatientResponseDto.ts
-- [ ] T032 [US1] Implement PatientController in src/api/controllers/PatientController.ts with create, list, search, getById handlers
-- [ ] T033 [US1] Create patient routes in src/api/routes/patients.ts per openapi.yaml endpoints
+- [X] T030 [P] [US1] Create CreatePatientDto in src/api/dto/CreatePatientDto.ts with class-validator decorators
+- [X] T031 [P] [US1] Create PatientResponseDto in src/api/dto/PatientResponseDto.ts
+- [X] T032 [US1] Implement PatientController in src/api/controllers/PatientController.ts with create, list, search, getById handlers
+- [X] T033 [US1] Create patient routes in src/api/routes/patients.ts per openapi.yaml endpoints
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
