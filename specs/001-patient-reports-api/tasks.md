@@ -136,28 +136,28 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 3
 
-- [ ] T049 [P] [US3] Create Analysis domain entity in src/domain/entities/Analysis.ts with id, reportId, extractedData, trendIndicators, confidenceScore, summaryText per data-model.md
-- [ ] T050 [P] [US3] Create AnalysisResult value object in src/domain/entities/AnalysisResult.ts for structured findings
-- [ ] T051 [US3] Implement AnalysisService in src/domain/services/AnalysisService.ts with analyzeReport, findByReport, compareTrends methods
+- [X] T049 [P] [US3] Create Analysis domain entity in src/domain/entities/Analysis.ts with id, reportId, extractedData, trendIndicators, confidenceScore, summaryText per data-model.md
+- [X] T050 [P] [US3] Create AnalysisResult value object in src/domain/entities/AnalysisResult.ts for structured findings
+- [X] T051 [US3] Implement AnalysisService in src/domain/services/AnalysisService.ts with analyzeReport, findByReport, compareTrends methods
 
 ### Infrastructure Layer for User Story 3
 
-- [ ] T052 [P] [US3] Create AnalysisEntity TypeORM entity in src/infrastructure/persistence/entities/AnalysisEntity.ts per data-model.md schema
-- [ ] T053 [US3] Generate TypeORM migration CreateAnalysesTable in migrations/ per data-model.md
-- [ ] T054 [US3] Implement InMemoryAnalysisRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryAnalysisRepository.ts
-- [ ] T055 [US3] Implement TypeORMAnalysisRepository production adapter in src/infrastructure/persistence/repositories/TypeORMAnalysisRepository.ts
-- [ ] T056 [US3] Implement MockAnalysisEngine adapter in src/infrastructure/analysis/MockAnalysisEngine.ts with pattern-matching logic per research.md
-- [ ] T057 [US3] Add mock analysis patterns for lab reports (hemoglobin, glucose, cholesterol values) in MockAnalysisEngine
-- [ ] T058 [P] [US3] Add mock analysis patterns for imaging reports (findings, impressions) in MockAnalysisEngine
-- [ ] T059 [P] [US3] Add mock analysis patterns for pathology reports (diagnoses, specimen info) in MockAnalysisEngine
-- [ ] T060 [US3] Add trend detection logic in AnalysisService comparing multiple analyses for same patient
-- [ ] T061 [US3] Add partial result handling for failed analyses per clarifications in spec.md
+- [X] T052 [P] [US3] Create AnalysisEntity TypeORM entity in src/infrastructure/persistence/entities/AnalysisEntity.ts per data-model.md schema
+- [X] T053 [US3] Generate TypeORM migration CreateAnalysesTable in migrations/ per data-model.md
+- [X] T054 [US3] Implement InMemoryAnalysisRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryAnalysisRepository.ts
+- [X] T055 [US3] Implement TypeORMAnalysisRepository production adapter in src/infrastructure/persistence/repositories/TypeORMAnalysisRepository.ts
+- [X] T056 [US3] Implement MockAnalysisEngine adapter in src/infrastructure/analysis/MockAnalysisEngine.ts with pattern-matching logic per research.md
+- [X] T057 [US3] Add mock analysis patterns for lab reports (hemoglobin, glucose, cholesterol values) in MockAnalysisEngine
+- [X] T058 [P] [US3] Add mock analysis patterns for imaging reports (findings, impressions) in MockAnalysisEngine
+- [X] T059 [P] [US3] Add mock analysis patterns for pathology reports (diagnoses, specimen info) in MockAnalysisEngine
+- [X] T060 [US3] Add trend detection logic in AnalysisService comparing multiple analyses for same patient
+- [X] T061 [US3] Add partial result handling for failed analyses per clarifications in spec.md
 
 ### API Layer for User Story 3
 
-- [ ] T062 [P] [US3] Create AnalysisResponseDto in src/api/dto/AnalysisResponseDto.ts
-- [ ] T063 [US3] Implement AnalysisController in src/api/controllers/AnalysisController.ts with analyzeReport, getAnalysis handlers
-- [ ] T064 [US3] Create analysis routes in src/api/routes/analyses.ts per openapi.yaml
+- [X] T062 [P] [US3] Create AnalysisResponseDto in src/api/dto/AnalysisResponseDto.ts
+- [X] T063 [US3] Implement AnalysisController in src/api/controllers/AnalysisController.ts with analyzeReport, getAnalysis handlers
+- [X] T064 [US3] Create analysis routes in src/api/routes/analyses.ts per openapi.yaml
 - [ ] T065 [US3] Add automatic analysis trigger on report upload in ReportService
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work - full report analysis pipeline functional

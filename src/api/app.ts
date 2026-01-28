@@ -5,6 +5,7 @@ import healthRouter from '@api/routes/health';
 import patientRouter from '@api/routes/patients';
 import reportRouter from '@api/routes/reports';
 import analysisRouter from '@api/routes/analyses';
+import noteRouter from '@api/routes/notes';
 
 /**
  * Express application bootstrap
@@ -35,6 +36,7 @@ export function createApp(): Express {
   apiRouter.use('/patients', patientRouter);
   apiRouter.use('/', reportRouter); // Report routes use both /patients/:id/reports and /reports/:id
   apiRouter.use('/', analysisRouter); // Analysis routes for /reports/:id/analyze
+  apiRouter.use('/', noteRouter); // Note routes for /reports/:id/notes and /notes/:id
   
   app.use(`/api/${apiVersion}`, apiRouter);
 
