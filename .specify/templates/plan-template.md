@@ -31,7 +31,33 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Hexagonal Architecture Validation**:
+- [ ] Core domain logic identified and isolated from external concerns
+- [ ] Port interfaces defined for all external interactions (databases, APIs, LLMs, file systems)
+- [ ] Adapters planned for each port (initial mock + future production implementation)
+- [ ] Dependency direction verified: adapters depend on ports, not vice versa
+- [ ] No framework coupling detected in planned core domain
+
+**Rapid Iteration Alignment**:
+- [ ] Feature delivers demonstrable value for early validation
+- [ ] Testing strategy documented: either manual validation now or TDD when production-ready
+- [ ] Technical debt documented if skipping tests
+
+**Mock-First Resources**:
+- [ ] All external resources have mock adapter implementations planned
+- [ ] Mock adapters implement the same port interfaces as planned production adapters
+- [ ] Development can proceed without external infrastructure dependencies
+
+**LLM Integration Readiness** (if applicable):
+- [ ] LLM interaction boundaries defined via ports
+- [ ] Prompts designed as data/configuration, not hard-coded
+- [ ] Multi-provider support considered in port design
+
+**Healthcare Domain Integrity** (if applicable):
+- [ ] Clinical terminology and report structures preserved
+- [ ] Privacy considerations addressed (PHI handling)
+- [ ] Audit trail requirements identified
+- [ ] Analysis algorithms are explainable
 
 ## Project Structure
 

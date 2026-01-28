@@ -1,0 +1,972 @@
+openapi: 3.0.3
+info:
+  title: Patient Reports Backend API
+  description: |
+    Backend API for healthcare reports management system. Enables clinicians to:
+    - Manage patient records
+    - Upload and retrieve medical reports (PDF, DOCX, images)
+    - Analyze reports for trends and patterns (mock initially, LLM later)
+    - Add clinical notes to reports
+    - Generate comprehensive patient summaries
+    
+    **Architecture**: Hexagonal/ports-and-adapters with mock-first external dependencies.
+    **Authentication**: Mocked for MVP (clinician identity in headers).
+  version: 1.0.0
+  contact:
+    name: LifeSpire API Support
+    email: api@lifespire.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api-dev.lifespire.example.com/api/v1
+    description: Development environment
+  - url: https://api.lifespire.example.com/api/v1
+    description: Production environment
+
+tags:
+  - name: patients
+    description: Patient management operations
+  - name: reports
+    description: Medical report operations
+  - name: analyses
+    description: Report analysis operations
+  - name: notes
+    description: Clinical notes operations
+  - name: health
+    description: System health check
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Health check endpoint
+      description: Returns system health status
+      operationId: healthCheck
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+
+  /patients:
+    get:
+      tags: [patients]
+      summary: List all patients
+      description: Retrieve all patients in the system (pagination deferred for MVP)
+      operationId: listPatients
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Patient'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [patients]
+      summary: Create new patient
+      description: Create a new patient record with basic demographics
+      operationId: createPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePatientRequest'
+      responses:
+        '201':
+          description: Patient created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Patient'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Conflict - Medical record number already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /patients/search:
+    get:
+      tags: [patients]
+      summary: Search patients
+      description: Search patients by name or medical record number
+      operationId: searchPatients
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: Search query (name or MRN)
+          schema:
+            type: string
+            minLength: 2
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Patient'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /patients/{patientId}:
+    get:
+      tags: [patients]
+      summary: Get patient by ID
+      description: Retrieve detailed information for a specific patient
+      operationId: getPatient
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Patient'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /patients/{patientId}/reports:
+    get:
+      tags: [reports]
+      summary: List patient reports
+      description: Retrieve all reports for a specific patient
+      operationId: listPatientReports
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      responses:
+        '200':
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Report'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [reports]
+      summary: Upload new report
+      description: |
+        Upload a medical report file for a patient. File must be PDF, DOCX, JPEG, or PNG.
+        Maximum file size: 50MB. System will automatically analyze the report.
+      operationId: uploadReport
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - reportDate
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Report file (PDF, DOCX, JPEG, PNG)
+                reportDate:
+                  type: string
+                  format: date
+                  description: Date the report was created/issued
+                description:
+                  type: string
+                  maxLength: 1000
+                  description: Optional description of the report
+      responses:
+        '201':
+          description: Report uploaded successfully, analysis queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Report'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Duplicate file detected
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Error'
+                  - type: object
+                    properties:
+                      existingReportId:
+                        type: string
+                        format: uuid
+        '413':
+          description: File too large (>50MB)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /patients/{patientId}/summary:
+    get:
+      tags: [patients]
+      summary: Get patient summary
+      description: |
+        Generate comprehensive patient summary including demographics, reports,
+        analyses, and clinical notes in chronological timeline format.
+      operationId: getPatientSummary
+      parameters:
+        - $ref: '#/components/parameters/PatientId'
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filter reports from this date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filter reports until this date
+        - name: reportType
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ReportType'
+          description: Filter by report type
+      responses:
+        '200':
+          description: Patient summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PatientSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reports/{reportId}:
+    get:
+      tags: [reports]
+      summary: Get report details
+      description: Retrieve report metadata and download URL
+      operationId: getReport
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Report details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Report'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reports/{reportId}/file:
+    get:
+      tags: [reports]
+      summary: Download report file
+      description: Download the actual report file
+      operationId: downloadReportFile
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Report file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reports/{reportId}/analyze:
+    post:
+      tags: [analyses]
+      summary: Trigger report analysis
+      description: |
+        Manually trigger analysis for a report. Normally analysis happens automatically
+        on upload, but this endpoint allows re-analysis or analysis of reports that
+        failed initial processing.
+      operationId: analyzeReport
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Analysis completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Analysis'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reports/{reportId}/analysis:
+    get:
+      tags: [analyses]
+      summary: Get report analysis
+      description: Retrieve analysis results for a report
+      operationId: getAnalysis
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Analysis'
+        '404':
+          description: Report not found or not yet analyzed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /reports/{reportId}/notes:
+    get:
+      tags: [notes]
+      summary: List report notes
+      description: Retrieve all clinical notes for a report (newest first)
+      operationId: listReportNotes
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ClinicalNote'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [notes]
+      summary: Add clinical note
+      description: Add a new clinical note to a report
+      operationId: addNote
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNoteRequest'
+      responses:
+        '201':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ClinicalNote'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /notes/{noteId}:
+    delete:
+      tags: [notes]
+      summary: Delete clinical note
+      description: Soft delete a clinical note (audit trail preserved)
+      operationId: deleteNote
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Note ID
+      responses:
+        '204':
+          description: Note deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    PatientId:
+      name: patientId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Patient unique identifier
+
+    ReportId:
+      name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Report unique identifier
+
+  schemas:
+    Patient:
+      type: object
+      required:
+        - id
+        - medicalRecordNumber
+        - name
+        - dateOfBirth
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique patient identifier
+        medicalRecordNumber:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: External medical record number (unique)
+          example: "MRN-12345"
+        name:
+          type: string
+          minLength: 2
+          maxLength: 200
+          description: Patient full name
+          example: "John Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          description: Patient date of birth
+          example: "1980-05-15"
+        contactInfo:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              example: "john.doe@example.com"
+            phone:
+              type: string
+              example: "+1-555-0123"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreatePatientRequest:
+      type: object
+      required:
+        - medicalRecordNumber
+        - name
+        - dateOfBirth
+      properties:
+        medicalRecordNumber:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "MRN-12345"
+        name:
+          type: string
+          minLength: 2
+          maxLength: 200
+          example: "John Doe"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1980-05-15"
+        contactInfo:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+
+    ReportType:
+      type: string
+      enum:
+        - lab
+        - imaging
+        - pathology
+        - consultation
+        - other
+      description: Type of medical report
+
+    Report:
+      type: object
+      required:
+        - id
+        - patientId
+        - reportType
+        - reportDate
+        - fileName
+        - fileFormat
+        - fileSize
+        - uploadTimestamp
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        reportType:
+          $ref: '#/components/schemas/ReportType'
+        reportDate:
+          type: string
+          format: date
+          example: "2024-01-15"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Annual blood work results"
+        fileName:
+          type: string
+          example: "lab-results-2024-01-15.pdf"
+        fileFormat:
+          type: string
+          example: "application/pdf"
+        fileSize:
+          type: integer
+          description: File size in bytes
+          example: 524288
+        fileHash:
+          type: string
+          description: SHA-256 hash of file content
+          example: "a1b2c3d4e5f6..."
+        uploadTimestamp:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Analysis:
+      type: object
+      required:
+        - id
+        - reportId
+        - reportType
+        - extractedData
+        - confidenceScore
+        - summaryText
+        - analysisMethod
+        - completionStatus
+        - analysisTimestamp
+      properties:
+        id:
+          type: string
+          format: uuid
+        reportId:
+          type: string
+          format: uuid
+        reportType:
+          $ref: '#/components/schemas/ReportType'
+        extractedData:
+          type: object
+          description: Structured medical findings
+          properties:
+            labValues:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Hemoglobin"
+                  value:
+                    type: number
+                    example: 14.5
+                  unit:
+                    type: string
+                    example: "g/dL"
+                  referenceRange:
+                    type: string
+                    example: "13.5-17.5"
+                  flag:
+                    type: string
+                    enum: [normal, low, high, critical]
+                    example: "normal"
+            diagnoses:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "E11.9"
+                  description:
+                    type: string
+                    example: "Type 2 diabetes mellitus"
+                  confidence:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    example: 0.95
+            medications:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Metformin"
+                  dosage:
+                    type: string
+                    example: "500mg"
+                  frequency:
+                    type: string
+                    example: "twice daily"
+            findings:
+              type: array
+              items:
+                type: object
+                properties:
+                  category:
+                    type: string
+                    example: "cardiovascular"
+                  description:
+                    type: string
+                    example: "Mild mitral regurgitation"
+                  severity:
+                    type: string
+                    enum: [mild, moderate, severe]
+        trendIndicators:
+          type: object
+          properties:
+            improving:
+              type: array
+              items:
+                type: string
+              example: ["glucose", "cholesterol"]
+            declining:
+              type: array
+              items:
+                type: string
+              example: ["hemoglobin"]
+            stable:
+              type: array
+              items:
+                type: string
+              example: ["blood pressure"]
+            recurring:
+              type: array
+              items:
+                type: string
+              example: ["urinary tract infection"]
+        confidenceScore:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Overall analysis confidence (0.0-1.0)
+          example: 0.85
+        summaryText:
+          type: string
+          minLength: 10
+          maxLength: 5000
+          example: "Lab results show improved glucose control with HbA1c at 6.8%. Minor decrease in hemoglobin noted, may require follow-up."
+        analysisMethod:
+          type: string
+          enum:
+            - mock
+            - openai-gpt4
+            - anthropic-claude
+            - local-llm
+          example: "mock"
+        completionStatus:
+          type: string
+          enum:
+            - complete
+            - partial
+            - failed
+          example: "complete"
+        errorDetails:
+          type: string
+          maxLength: 2000
+          nullable: true
+        analysisTimestamp:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ClinicalNote:
+      type: object
+      required:
+        - id
+        - reportId
+        - content
+        - authorIdentifier
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        reportId:
+          type: string
+          format: uuid
+        content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          example: "Patient reports improvement in symptoms. Recommend continuing current treatment plan."
+        authorIdentifier:
+          type: string
+          description: Clinician identifier (mocked for MVP)
+          example: "Dr. Jane Smith"
+        createdAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateNoteRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        authorIdentifier:
+          type: string
+          description: Clinician identifier (optional, defaults to X-Clinician-ID header)
+          example: "Dr. Jane Smith"
+
+    PatientSummary:
+      type: object
+      required:
+        - patient
+        - timeline
+      properties:
+        patient:
+          $ref: '#/components/schemas/Patient'
+        timeline:
+          type: array
+          description: Chronological timeline of reports, analyses, and notes
+          items:
+            type: object
+            required:
+              - date
+              - type
+              - data
+            properties:
+              date:
+                type: string
+                format: date
+              type:
+                type: string
+                enum: [report, note]
+              data:
+                oneOf:
+                  - type: object
+                    required: [report, analysis, notes]
+                    properties:
+                      report:
+                        $ref: '#/components/schemas/Report'
+                      analysis:
+                        $ref: '#/components/schemas/Analysis'
+                        nullable: true
+                      notes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ClinicalNote'
+        criticalFindings:
+          type: array
+          description: Highlighted critical findings from analyses
+          items:
+            type: object
+            properties:
+              reportId:
+                type: string
+                format: uuid
+              finding:
+                type: string
+              severity:
+                type: string
+                enum: [critical, high, moderate]
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Resource not found"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Validation failed"
+            details:
+              fields:
+                - name: "dateOfBirth"
+                  error: "Must be a valid date in the past"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Patient not found"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "An unexpected error occurred"
+
+  securitySchemes:
+    ClinicianAuth:
+      type: apiKey
+      in: header
+      name: X-Clinician-ID
+      description: Mocked clinician identifier for MVP (no real authentication)
+
+security:
+  - ClinicianAuth: []
