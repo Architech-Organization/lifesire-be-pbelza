@@ -36,6 +36,7 @@ const upload = multer({
 
 /**
  * Factory function to create report controller with dependencies
+ * Called lazily on first request to ensure DataSource is initialized
  */
 function createController(): ReportController {
   const storagePath = path.join(process.cwd(), 'data', 'uploads');
@@ -48,34 +49,42 @@ function createController(): ReportController {
 }
 
 const router = Router();
-const controller = createController();
+let controllerInstance: ReportController | null = null;
+
+// Lazy controller getter
+function getController(): ReportController {
+  if (!controllerInstance) {
+    controllerInstance = createController();
+  }
+  return controllerInstance;
+}
 
 // Report routes
 router.post(
   '/patients/:patientId/reports',
   upload.single('file'),
   validateBody(UploadReportDto),
-  asyncHandler(async (req, res) => controller.upload(req, res))
+  asyncHandler(async (req, res) => getController().upload(req, res))
 );
 
 router.get(
   '/patients/:patientId/reports',
-  asyncHandler(async (req, res) => controller.listByPatient(req, res))
+  asyncHandler(async (req, res) => getController().listByPatient(req, res))
 );
 
 router.get(
   '/reports/:id',
-  asyncHandler(async (req, res) => controller.getById(req, res))
+  asyncHandler(async (req, res) => getController().getById(req, res))
 );
 
 router.get(
   '/reports/:id/file',
-  asyncHandler(async (req, res) => controller.downloadFile(req, res))
+  asyncHandler(async (req, res) => getController().downloadFile(req, res))
 );
 
 router.delete(
   '/reports/:id',
-  asyncHandler(async (req, res) => controller.delete(req, res))
+  asyncHandler(async (req, res) => getController().delete(req, res))
 );
 
 export default router;
