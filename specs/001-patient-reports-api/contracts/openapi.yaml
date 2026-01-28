@@ -285,12 +285,6 @@ paths:
             type: string
             format: date
           description: Filter reports until this date
-        - name: reportType
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/ReportType'
-          description: Filter by report type
       responses:
         '200':
           description: Patient summary
@@ -595,22 +589,11 @@ components:
             phone:
               type: string
 
-    ReportType:
-      type: string
-      enum:
-        - lab
-        - imaging
-        - pathology
-        - consultation
-        - other
-      description: Type of medical report
-
     Report:
       type: object
       required:
         - id
         - patientId
-        - reportType
         - reportDate
         - fileName
         - fileFormat
@@ -625,8 +608,6 @@ components:
         patientId:
           type: string
           format: uuid
-        reportType:
-          $ref: '#/components/schemas/ReportType'
         reportDate:
           type: string
           format: date
@@ -668,7 +649,6 @@ components:
       required:
         - id
         - reportId
-        - reportType
         - extractedData
         - confidenceScore
         - summaryText
@@ -682,8 +662,6 @@ components:
         reportId:
           type: string
           format: uuid
-        reportType:
-          $ref: '#/components/schemas/ReportType'
         extractedData:
           type: object
           description: Structured medical findings

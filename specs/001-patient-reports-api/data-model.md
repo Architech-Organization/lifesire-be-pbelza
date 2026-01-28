@@ -54,8 +54,7 @@ This document defines the data model for the patient reports system, including d
 **Attributes**:
 - `id`: string (UUID) - Unique identifier
 - `patientId`: string (UUID, foreign key) - Reference to Patient
-- `reportType`: string - Type classification (auto-populated by analysis)
-  - Values: "lab", "imaging", "pathology", "consultation", "other"
+
 - `reportDate`: Date - Date the medical report was created/issued
 - `description`: string (optional) - Clinician-provided description
 - `fileName`: string - Original uploaded filename
@@ -252,7 +251,6 @@ CREATE INDEX idx_patients_deleted ON patients(deleted_at) WHERE deleted_at IS NO
 CREATE TABLE reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    report_type VARCHAR(50) NOT NULL DEFAULT 'other',
     report_date DATE NOT NULL,
     description TEXT,
     file_name VARCHAR(255) NOT NULL,
@@ -265,7 +263,6 @@ CREATE TABLE reports (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL,
     
-    CONSTRAINT chk_report_type CHECK (report_type IN ('lab', 'imaging', 'pathology', 'consultation', 'other')),
     CONSTRAINT chk_report_date CHECK (report_date <= CURRENT_DATE),
     CONSTRAINT chk_file_size CHECK (file_size > 0 AND file_size <= 52428800),
     CONSTRAINT chk_file_hash CHECK (LENGTH(file_hash) = 64)
@@ -277,7 +274,6 @@ CREATE UNIQUE INDEX idx_reports_patient_hash ON reports(patient_id, file_hash) W
 -- Performance indexes
 CREATE INDEX idx_reports_patient ON reports(patient_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_reports_date ON reports(report_date DESC);
-CREATE INDEX idx_reports_type ON reports(report_type) WHERE deleted_at IS NULL;
 CREATE INDEX idx_reports_deleted ON reports(deleted_at) WHERE deleted_at IS NOT NULL;
 ```
 
@@ -287,7 +283,6 @@ CREATE INDEX idx_reports_deleted ON reports(deleted_at) WHERE deleted_at IS NOT 
 CREATE TABLE analyses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     report_id UUID UNIQUE NOT NULL REFERENCES reports(id) ON DELETE CASCADE,
-    report_type VARCHAR(50) NOT NULL,
     extracted_data JSONB NOT NULL,
     trend_indicators JSONB NOT NULL DEFAULT '{}',
     confidence_score NUMERIC(3,2) NOT NULL,
@@ -299,7 +294,6 @@ CREATE TABLE analyses (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT chk_report_type CHECK (report_type IN ('lab', 'imaging', 'pathology', 'consultation', 'other')),
     CONSTRAINT chk_confidence CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
     CONSTRAINT chk_completion CHECK (completion_status IN ('complete', 'partial', 'failed')),
     CONSTRAINT chk_method CHECK (analysis_method IN ('mock', 'openai-gpt4', 'anthropic-claude', 'local-llm'))

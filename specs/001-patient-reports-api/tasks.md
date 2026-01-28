@@ -102,7 +102,7 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 2
 
-- [ ] T034 [P] [US2] Create Report domain entity in src/domain/entities/Report.ts with id, patientId, reportType, reportDate, fileName, fileHash, fileSize per data-model.md
+- [ ] T034 [P] [US2] Create Report domain entity in src/domain/entities/Report.ts with id, patientId, reportDate, fileName, fileHash, fileSize per data-model.md
 - [ ] T035 [P] [US2] Create FileReference value object in src/domain/entities/FileReference.ts
 - [ ] T036 [US2] Implement ReportService in src/domain/services/ReportService.ts with upload, findByPatient, findById, downloadFile, checkDuplicate methods
 
@@ -209,7 +209,7 @@ Single backend project at repository root:
 ### API Layer for User Story 5
 
 - [ ] T080 [P] [US5] Create PatientSummaryResponseDto in src/api/dto/PatientSummaryResponseDto.ts
-- [ ] T081 [P] [US5] Create SummaryQueryDto in src/api/dto/SummaryQueryDto.ts with date range and report type filters
+- [ ] T081 [P] [US5] Create SummaryQueryDto in src/api/dto/SummaryQueryDto.ts with date range filters
 - [ ] T082 [US5] Implement summary handler in PatientController using SummaryService
 - [ ] T083 [US5] Add summary route GET /patients/:id/summary to src/api/routes/patients.ts per openapi.yaml
 - [ ] T084 [US5] Add critical findings highlighting logic in SummaryService based on analysis confidence scores

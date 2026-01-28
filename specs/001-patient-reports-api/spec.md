@@ -98,7 +98,7 @@ Clinicians need a consolidated view of all patient data including demographics, 
 - How does system handle patients with no reports (empty medical history)?
 - What happens when attempting to add notes to non-existent reports?
 - How does system handle very large report files (e.g., high-resolution medical imaging)?
-- **What happens when patient has hundreds of reports (pagination, performance)?** → Patient listing returns all for demo scale. Report listing per patient may need pagination in future if performance degrades.
+- **What happens when patient has hundreds of reports (pagination, performance)?** → Patient listing returns all for demo scale (≤100 patients, ≤5000 reports). Report listing per patient may need pagination in future if performance degrades.
 - How does system handle concurrent report uploads for same patient?
 - **What happens when analysis service is unavailable (mock or LLM)?** → Treated as analysis failure: return partial results if any, flag as incomplete, store error state for debugging.
 
@@ -109,14 +109,14 @@ Clinicians need a consolidated view of all patient data including demographics, 
 **Patient Management:**
 - **FR-001**: System MUST allow creating patients with basic demographics (name, date of birth, medical record number, optional contact info)
 - **FR-002**: System MUST assign unique patient identifier (ID) upon creation
-- **FR-003**: System MUST support listing all patients (pagination deferred - return all for demo scale ~100 patients)
+- **FR-003**: System MUST support listing all patients (pagination deferred - return all for demo scale: ≤100 patients, ≤5000 reports)
 - **FR-004**: System MUST allow retrieving individual patient details by ID
 - **FR-005**: System MUST support searching patients by name or medical record number
 
 **Report Management:**
 - **FR-006**: System MUST allow uploading medical report files for specific patients
 - **FR-007**: System MUST support multiple file formats (PDF, DOCX, image formats: JPEG, PNG)
-- **FR-008**: System MUST store report metadata (date, optional description, file size, upload timestamp) and auto-populate report type via analysis
+- **FR-008**: System MUST store report metadata (date, optional description, file size, upload timestamp)
 - **FR-009**: System MUST assign unique report identifier (ID) upon upload
 - **FR-010**: System MUST link each report to exactly one patient
 - **FR-011**: System MUST detect duplicate uploads (same file hash for same patient) and reject with reference to existing report
@@ -143,7 +143,7 @@ Clinicians need a consolidated view of all patient data including demographics, 
 **Patient Summary:**
 - **FR-027**: System MUST generate comprehensive patient summary including demographics, reports, analyses, and notes
 - **FR-028**: System MUST present patient data in chronological timeline format
-- **FR-029**: System MUST support filtering patient summary by date range and report type
+- **FR-029**: System MUST support filtering patient summary by date range
 - **FR-030**: System MUST highlight critical findings in patient summary
 
 **Data Integrity & Audit:**
@@ -156,9 +156,9 @@ Clinicians need a consolidated view of all patient data including demographics, 
 
 - **Patient**: Represents an individual receiving medical care. Attributes include unique ID, name, date of birth, medical record number, contact information, creation timestamp. Contains multiple Reports.
 
-- **Report**: Represents a medical document for a patient. Attributes include unique ID, patient ID (foreign reference), report type (auto-populated by analysis: lab, imaging, pathology, consultation, other), report date, optional description, file reference, file hash (for duplicate detection), file format, file size, upload timestamp. Contains multiple ClinicalNotes and may have associated Analysis.
+- **Report**: Represents a medical document for a patient. Attributes include unique ID, patient ID (foreign reference), report date, optional description, file reference, file hash (for duplicate detection), file format, file size, upload timestamp. Contains multiple ClinicalNotes and may have associated Analysis.
 
-- **Analysis**: Represents automated analysis results for a report. Attributes include unique ID, report ID (foreign reference), determined report type (classification output), extracted structured data (JSON of findings, values, diagnoses, medications), trend indicators, confidence score, summary text, analysis timestamp, analysis method (mock/LLM provider), completion status (complete/partial/failed), error details if applicable. One-to-one with Report.
+- **Analysis**: Represents automated analysis results for a report. Attributes include unique ID, report ID (foreign reference), extracted structured data (JSON of findings, values, diagnoses, medications), trend indicators, confidence score, summary text, analysis timestamp, analysis method (mock/LLM provider), completion status (complete/partial/failed), error details if applicable. One-to-one with Report.
 
 - **ClinicalNote**: Represents clinician-added annotation on a report. Multiple notes can exist per report forming a chronological list. Attributes include unique ID, report ID (foreign reference), note content, author identifier, creation timestamp, deletion flag (soft delete). Notes are immutable after creation (append-only).
 
@@ -170,7 +170,7 @@ Clinicians need a consolidated view of all patient data including demographics, 
 
 - Q: When analysis fails (mock or future LLM timeout/error), how should the system respond to the clinician? → A: Return partial results if any extraction succeeded, flag analysis as incomplete/failed with error details
 - Q: For patient pagination (FR-003), what page size should the API use by default? → A: Show all (no pagination initially for demo scale)
-- Q: What specific report types should the system recognize and support in the "report type" field (FR-008)? → A: Type auto-populated by analysis (LLM/mock), not user input
+- Q: What specific report types should the system recognize and support? → A: Report types removed from requirements - not needed for MVP
 - Q: When a clinician updates a clinical note (FR-025), how should the edit history be maintained? → A: Multiple notes per report, newest on top
 - Q: For duplicate report uploads (same file, same patient), what should the system do? → A: Detect duplicate (file hash) and reject, return reference to existing report
 

@@ -29,9 +29,9 @@ Backend API for healthcare reports management enabling clinicians to manage pati
 **Constraints**: 
 - Must support containerization (Docker)
 - Must be cloud-agnostic (no cloud-specific SDKs in core logic)
-- Must support demo scale (~100 patients, ~50 reports each)
+- Must support demo scale (≤100 patients, ≤5000 reports total)
 
-**Scale/Scope**: Demo/MVP scale - 100 patients, <5000 total reports, <10 concurrent users
+**Scale/Scope**: Demo/MVP scale - ≤100 patients, ≤5000 total reports, <10 concurrent users
 
 ## Constitution Check
 
