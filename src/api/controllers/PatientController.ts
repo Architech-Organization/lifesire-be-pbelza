@@ -30,13 +30,12 @@ export class PatientController {
       return;
     }
 
-    const contactInfo =
-      dto.email || dto.phone
-        ? {
-            email: dto.email,
-            phone: dto.phone,
-          }
-        : undefined;
+    const contactInfo = dto.contactInfo
+      ? {
+          email: dto.contactInfo.email,
+          phone: dto.contactInfo.phone,
+        }
+      : undefined;
 
     const patient = await this.patientService.create(
       dto.medicalRecordNumber,
@@ -126,13 +125,12 @@ export class PatientController {
       return;
     }
 
-    const contactInfo =
-      dto.email || dto.phone
-        ? {
-            email: dto.email,
-            phone: dto.phone,
-          }
-        : undefined;
+    const contactInfo = dto.contactInfo
+      ? {
+          email: dto.contactInfo.email,
+          phone: dto.contactInfo.phone,
+        }
+      : undefined;
 
     const patient = await this.patientService.update(
       id,

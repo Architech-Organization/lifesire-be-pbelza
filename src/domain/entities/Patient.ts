@@ -59,8 +59,8 @@ export class Patient extends BaseEntity {
     if (!this.medicalRecordNumber || this.medicalRecordNumber.length < 3 || this.medicalRecordNumber.length > 50) {
       errors.push('Medical record number must be 3-50 characters');
     }
-    if (!/^[a-zA-Z0-9]+$/.test(this.medicalRecordNumber)) {
-      errors.push('Medical record number must be alphanumeric');
+    if (!/^[a-zA-Z0-9\-_]+$/.test(this.medicalRecordNumber)) {
+      errors.push('Medical record number must be alphanumeric with optional hyphens or underscores');
     }
 
     // Name validation

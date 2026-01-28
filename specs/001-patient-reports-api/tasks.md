@@ -223,7 +223,7 @@ Single backend project at repository root:
 **Purpose**: Improvements that affect multiple user stories
 
 - [ ] T085 [P] Add request logging middleware with pino structured logging in src/api/middleware/requestLogger.ts
-- [ ] T086 [P] Add OpenAPI documentation serving with Swagger UI at /api-docs endpoint
+- [X] T086 [P] Add OpenAPI documentation serving with Swagger UI at /api-docs endpoint
 - [ ] T087 [P] Create Dockerfile with multi-stage build per plan.md deployment considerations
 - [ ] T088 Add database connection health check in health endpoint
 - [ ] T089 Add file storage health check in health endpoint

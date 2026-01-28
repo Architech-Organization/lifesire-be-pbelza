@@ -13,12 +13,15 @@ export function validateBody(dtoClass: any) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       // Transform plain object to DTO instance
-      const dtoInstance = plainToInstance(dtoClass, req.body);
+      const dtoInstance = plainToInstance(dtoClass, req.body, {
+        enableImplicitConversion: true,
+      });
 
       // Validate DTO instance
       const errors: ClassValidatorError[] = await validate(dtoInstance, {
         whitelist: true,      // Strip non-whitelisted properties
         forbidNonWhitelisted: true,  // Throw error on extra properties
+        validationError: { target: false },
       });
 
       if (errors.length > 0) {

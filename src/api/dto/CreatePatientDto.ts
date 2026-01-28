@@ -1,4 +1,19 @@
-import { IsString, IsDateString, IsEmail, IsOptional, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsString, IsDateString, IsEmail, IsOptional, MinLength, MaxLength, Matches, ValidateNested, IsObject } from 'class-validator';
+import { Type } from 'class-transformer';
+
+/**
+ * ContactInfoDto: Nested contact information
+ */
+export class ContactInfoDto {
+  @IsOptional()
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50, { message: 'Phone must not exceed 50 characters' })
+  phone?: string;
+}
 
 /**
  * CreatePatientDto: Request DTO for creating patients
@@ -9,7 +24,7 @@ export class CreatePatientDto {
   @IsString()
   @MinLength(3, { message: 'Medical record number must be at least 3 characters' })
   @MaxLength(50, { message: 'Medical record number must not exceed 50 characters' })
-  @Matches(/^[a-zA-Z0-9]+$/, { message: 'Medical record number must be alphanumeric' })
+  @Matches(/^[a-zA-Z0-9\-_]+$/, { message: 'Medical record number must be alphanumeric with optional hyphens or underscores' })
   medicalRecordNumber!: string;
 
   @IsString()
@@ -21,11 +36,8 @@ export class CreatePatientDto {
   dateOfBirth!: string;
 
   @IsOptional()
-  @IsEmail({}, { message: 'Email must be a valid email address' })
-  email?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(50, { message: 'Phone must not exceed 50 characters' })
-  phone?: string;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ContactInfoDto)
+  contactInfo?: ContactInfoDto;
 }
