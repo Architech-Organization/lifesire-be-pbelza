@@ -102,8 +102,6 @@ This document defines the data model for the patient reports system, including d
 **Attributes**:
 - `id`: string (UUID) - Unique identifier
 - `reportId`: string (UUID, foreign key) - Reference to Report
-- `reportType`: string - Determined report classification
-  - Values: "lab", "imaging", "pathology", "consultation", "other"
 - `extractedData`: object (JSON) - Structured medical findings
   - `labValues`: array of { name, value, unit, referenceRange, flag }
   - `diagnoses`: array of { code, description, confidence }
@@ -141,7 +139,6 @@ This document defines the data model for the patient reports system, including d
 **Validation**:
 ```typescript
 - reportId: required, must reference existing report
-- reportType: required, enum values
 - extractedData: required, valid JSON object
 - confidenceScore: required, number between 0.0 and 1.0
 - summaryText: required, 10-5000 chars
@@ -412,7 +409,7 @@ Mock data characteristics:
 5. **Get patient summary timeline**
    ```sql
    SELECT 
-     r.id, r.report_date, r.report_type, r.file_name,
+     r.id, r.report_date, r.file_name,
      a.summary_text, a.confidence_score,
      COUNT(n.id) as note_count
    FROM reports r

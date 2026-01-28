@@ -78,8 +78,8 @@ This document captures research findings and technology decisions for implementi
 **Decision**: **Port/Adapter Pattern** with **MockAnalysisEngine** initial implementation
 
 **Rationale**:
-- Port interface: `AnalysisEnginePort` with `analyze(reportContent, reportType): Promise<AnalysisResult>`
-- Mock implementation: Pattern matching on keywords, fixture data for report types
+- Port interface: `AnalysisEnginePort` with `analyze(reportContent): Promise<AnalysisResult>`
+- Mock implementation: Pattern matching on keywords, fixture data analysis
 - Mock produces realistic structured output: lab values, diagnoses, trends, confidence scores
 - Future LLM adapter: `LLMAnalysisEngine` implements same interface, delegates to OpenAI/Claude
 - Prompt management: JSON files in `infrastructure/config/prompts/` directory

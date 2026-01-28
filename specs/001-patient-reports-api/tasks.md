@@ -227,7 +227,7 @@ Single backend project at repository root:
 - [ ] T087 [P] Create Dockerfile with multi-stage build per plan.md deployment considerations
 - [ ] T088 Add database connection health check in health endpoint
 - [ ] T089 Add file storage health check in health endpoint
-- [ ] T090 [P] Add input sanitization for all string fields to prevent injection attacks
+- [ ] T090 [P] Add input sanitization for all string fields to prevent injection attacks [Maps to FR-033]
 - [ ] T091 [P] Add rate limiting middleware for API endpoints (basic express-rate-limit)
 - [ ] T092 Validate all environment variables at startup in Config.ts
 - [ ] T093 [P] Add graceful shutdown handling in index.ts for SIGTERM/SIGINT
@@ -407,6 +407,7 @@ Then:
 - TypeORM entities separate from domain entities to prevent ORM coupling
 - Mock adapters enable development without Docker/PostgreSQL
 - Real LLM integration: swap MockAnalysisEngine for OpenAIAnalysisEngine/ClaudeAnalysisEngine (no domain changes)
+- FR-034 (concurrent operations): Handled by TypeORM transaction isolation in repository implementations (T029, T040, T055, T071)
 
 ---
 
