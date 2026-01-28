@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import { Config } from '@infrastructure/config/Config';
 import { errorHandler } from '@api/middleware/errorHandler';
 import healthRouter from '@api/routes/health';
+import swaggerRouter from '@api/routes/swagger';
 import patientRouter from '@api/routes/patients';
 import reportRouter from '@api/routes/reports';
 import analysisRouter from '@api/routes/analyses';
@@ -28,6 +29,9 @@ export function createApp(): Express {
 
   // Health check (no API version prefix)
   app.use('/health', healthRouter);
+
+  // API documentation (no API version prefix)
+  app.use('/api-docs', swaggerRouter);
 
   // API routes with version prefix
   const apiRouter = express.Router();

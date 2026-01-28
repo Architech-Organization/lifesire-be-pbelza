@@ -12,6 +12,7 @@ RUN npm ci
 # Copy source code
 COPY src/ ./src/
 COPY migrations/ ./migrations/
+COPY openapi.yaml ./
 
 # Build TypeScript
 RUN npm run build
@@ -30,6 +31,7 @@ RUN npm ci --only=production
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/openapi.yaml ./
 
 # Create data directory for SQLite and uploads
 RUN mkdir -p /app/data/uploads && \
