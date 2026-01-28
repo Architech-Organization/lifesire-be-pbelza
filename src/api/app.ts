@@ -4,6 +4,7 @@ import { errorHandler } from '@api/middleware/errorHandler';
 import healthRouter from '@api/routes/health';
 import patientRouter from '@api/routes/patients';
 import reportRouter from '@api/routes/reports';
+import analysisRouter from '@api/routes/analyses';
 
 /**
  * Express application bootstrap
@@ -33,6 +34,7 @@ export function createApp(): Express {
   // Register feature routes
   apiRouter.use('/patients', patientRouter);
   apiRouter.use('/', reportRouter); // Report routes use both /patients/:id/reports and /reports/:id
+  apiRouter.use('/', analysisRouter); // Analysis routes for /reports/:id/analyze
   
   app.use(`/api/${apiVersion}`, apiRouter);
 
