@@ -172,23 +172,23 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 4
 
-- [ ] T066 [P] [US4] Create ClinicalNote domain entity in src/domain/entities/ClinicalNote.ts with id, reportId, content, authorIdentifier per data-model.md
-- [ ] T067 [US4] Implement ClinicalNoteService in src/domain/services/ClinicalNoteService.ts with create, findByReport, softDelete methods
+- [X] T066 [P] [US4] Create ClinicalNote domain entity in src/domain/entities/ClinicalNote.ts with id, reportId, content, authorIdentifier per data-model.md
+- [X] T067 [US4] Implement ClinicalNoteService in src/domain/services/ClinicalNoteService.ts with create, findByReport, softDelete methods
 
 ### Infrastructure Layer for User Story 4
 
-- [ ] T068 [P] [US4] Create ClinicalNoteEntity TypeORM entity in src/infrastructure/persistence/entities/ClinicalNoteEntity.ts per data-model.md schema
-- [ ] T069 [US4] Generate TypeORM migration CreateClinicalNotesTable in migrations/ per data-model.md
-- [ ] T070 [US4] Implement InMemoryClinicalNoteRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryClinicalNoteRepository.ts
-- [ ] T071 [US4] Implement TypeORMClinicalNoteRepository production adapter in src/infrastructure/persistence/repositories/TypeORMClinicalNoteRepository.ts
+- [X] T068 [P] [US4] Create ClinicalNoteEntity TypeORM entity in src/infrastructure/persistence/entities/ClinicalNoteEntity.ts per data-model.md schema
+- [X] T069 [US4] Generate TypeORM migration CreateClinicalNotesTable in migrations/ per data-model.md
+- [X] T070 [US4] Implement InMemoryClinicalNoteRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryClinicalNoteRepository.ts
+- [X] T071 [US4] Implement TypeORMClinicalNoteRepository production adapter in src/infrastructure/persistence/repositories/TypeORMClinicalNoteRepository.ts
 
 ### API Layer for User Story 4
 
-- [ ] T072 [P] [US4] Create CreateNoteDto in src/api/dto/CreateNoteDto.ts with class-validator decorators
-- [ ] T073 [P] [US4] Create ClinicalNoteResponseDto in src/api/dto/ClinicalNoteResponseDto.ts
-- [ ] T074 [US4] Implement ClinicalNoteController in src/api/controllers/ClinicalNoteController.ts with create, listByReport, delete handlers
-- [ ] T075 [US4] Create clinical notes routes in src/api/routes/notes.ts per openapi.yaml
-- [ ] T076 [US4] Add ordering logic to return newest notes first in ClinicalNoteService
+- [X] T072 [P] [US4] Create CreateNoteDto in src/api/dto/CreateNoteDto.ts with class-validator decorators
+- [X] T073 [P] [US4] Create ClinicalNoteResponseDto in src/api/dto/ClinicalNoteResponseDto.ts
+- [X] T074 [US4] Implement ClinicalNoteController in src/api/controllers/ClinicalNoteController.ts with create, listByReport, delete handlers
+- [X] T075 [US4] Create clinical notes routes in src/api/routes/notes.ts per openapi.yaml
+- [X] T076 [US4] Add ordering logic to return newest notes first in ClinicalNoteService
 
 **Checkpoint**: At this point, all user stories 1-4 should work - clinicians can annotate reports
 
