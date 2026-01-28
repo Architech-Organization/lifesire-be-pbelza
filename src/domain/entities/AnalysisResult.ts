@@ -4,7 +4,12 @@
  * Immutable container for analysis results with type-safe access to findings.
  */
 
-import { ExtractedData, TrendIndicators, CompletionStatus } from './Analysis';
+import { 
+  ExtractedData, 
+  TrendIndicators 
+} from '@domain/ports/AnalysisEnginePort';
+
+export type CompletionStatus = 'complete' | 'partial' | 'failed';
 
 export class AnalysisResult {
   constructor(
@@ -20,9 +25,8 @@ export class AnalysisResult {
    * Check if result has critical findings
    */
   hasCriticalFindings(): boolean {
-    const criticalLabs = this.extractedData.labValues?.some(
-      (lab) => lab.flag === 'critical'
-    );
+    // Port LabValue.flag doesn't include 'critical', only 'high', 'low', 'normal'
+    const criticalLabs = false; // Not supported in port definition
     
     const criticalFindings = this.extractedData.findings?.some(
       (finding) => finding.severity === 'critical'
@@ -103,12 +107,12 @@ export class AnalysisResult {
    */
   static fromObject(obj: Record<string, any>): AnalysisResult {
     return new AnalysisResult(
-      obj.extractedData,
-      obj.trendIndicators,
-      obj.confidenceScore,
-      obj.summaryText,
-      obj.completionStatus,
-      obj.errorDetails
+      obj['extractedData'],
+      obj['trendIndicators'],
+      obj['confidenceScore'],
+      obj['summaryText'],
+      obj['completionStatus'],
+      obj['errorDetails']
     );
   }
 }

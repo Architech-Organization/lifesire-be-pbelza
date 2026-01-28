@@ -74,9 +74,10 @@ export class Report extends BaseEntity {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'image/jpeg',
       'image/png',
+      'text/plain', // For testing analysis with lab reports
     ];
     if (!allowedFormats.includes(this.fileFormat)) {
-      errors.push('Invalid file format. Allowed: PDF, DOCX, JPEG, PNG');
+      errors.push('Invalid file format. Allowed: PDF, DOCX, JPEG, PNG, TXT');
     }
 
     // File size validation

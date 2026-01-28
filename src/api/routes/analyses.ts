@@ -57,4 +57,9 @@ router.get('/reports/:id/analysis', asyncHandler(async (req, res) => {
   await getController().getAnalysis(req, res);
 }));
 
+// GET /api/v1/analyses/:id - Get analysis by ID
+router.get('/analyses/:id', asyncHandler(async (req, res) => {
+  await getController().getById(req, res);
+}));
+
 export default router;

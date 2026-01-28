@@ -39,10 +39,10 @@ export interface ExtractedData {
 }
 
 export interface TrendIndicators {
-  improving: string[];
-  declining: string[];
-  stable: string[];
-  recurring: string[];
+  improving?: string[];
+  declining?: string[];
+  stable?: string[];
+  recurring?: string[];
 }
 
 export interface AnalysisResult {

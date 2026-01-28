@@ -1,6 +1,12 @@
-import { AnalysisEnginePort } from '@domain/ports/AnalysisEnginePort';
-import { AnalysisResult } from '@domain/entities/AnalysisResult';
-import { ExtractedData, LabValue, Diagnosis, Medication, Finding, TrendIndicators } from '@domain/entities/Analysis';
+import { 
+  AnalysisEnginePort,
+  AnalysisResult,
+  ExtractedData, 
+  LabValue, 
+  Diagnosis, 
+  Medication, 
+  Finding
+} from '@domain/ports/AnalysisEnginePort';
 
 /**
  * MockAnalysisEngine: Pattern-matching analysis engine for testing
@@ -16,7 +22,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
   async analyze(
     fileBuffer: Buffer,
     fileName: string,
-    mimeType: string
+    _mimeType: string
   ): Promise<AnalysisResult> {
     // Convert buffer to text (simplified - real implementation would use PDF/DOCX parsers)
     const text = fileBuffer.toString('utf-8');
@@ -31,23 +37,23 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
       // Calculate confidence based on data extracted
       const confidence = this.calculateConfidence(extractedData);
 
-      return new AnalysisResult(
+      return {
         extractedData,
-        {}, // Empty trends - will be calculated by service
-        confidence,
+        trendIndicators: {},
+        confidenceScore: confidence,
         summaryText,
-        'complete'
-      );
+        completionStatus: 'complete'
+      };
     } catch (error: any) {
       // Return partial result on error per T061
-      return new AnalysisResult(
-        { findings: [{ category: 'error', description: error.message }] },
-        {},
-        0,
-        `Analysis failed: ${error.message}`,
-        'partial',
-        error.message
-      );
+      return {
+        extractedData: { findings: [{ category: 'error', description: error.message }] },
+        trendIndicators: {},
+        confidenceScore: 0,
+        summaryText: `Analysis failed: ${error.message}`,
+        completionStatus: 'partial',
+        errorDetails: error.message
+      };
     }
   }
 
@@ -89,7 +95,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Hemoglobin patterns
     const hgbMatch = text.match(/(?:hemoglobin|hgb|hb)[:\s]+([0-9.]+)\s*(?:g\/dl)?/i);
-    if (hgbMatch) {
+    if (hgbMatch && hgbMatch[1]) {
       const value = parseFloat(hgbMatch[1]);
       values.push({
         name: 'Hemoglobin',
@@ -102,33 +108,33 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Glucose patterns
     const glucoseMatch = text.match(/(?:glucose|blood sugar)[:\s]+([0-9.]+)\s*(?:mg\/dl)?/i);
-    if (glucoseMatch) {
+    if (glucoseMatch && glucoseMatch[1]) {
       const value = parseFloat(glucoseMatch[1]);
       values.push({
         name: 'Glucose',
         value: glucoseMatch[1],
         unit: 'mg/dL',
         referenceRange: '70-100',
-        flag: value < 70 ? 'low' : value > 100 ? 'high' : value > 125 ? 'critical' : 'normal',
+        flag: value < 70 ? 'low' : value > 125 ? 'high' : 'normal',
       });
     }
 
     // Cholesterol patterns
     const cholMatch = text.match(/(?:cholesterol|total cholesterol)[:\s]+([0-9.]+)\s*(?:mg\/dl)?/i);
-    if (cholMatch) {
+    if (cholMatch && cholMatch[1]) {
       const value = parseFloat(cholMatch[1]);
       values.push({
         name: 'Total Cholesterol',
         value: cholMatch[1],
         unit: 'mg/dL',
         referenceRange: '<200',
-        flag: value < 200 ? 'normal' : value < 240 ? 'high' : 'critical',
+        flag: value < 200 ? 'normal' : value >= 200 ? 'high' : 'normal',
       });
     }
 
     // HDL cholesterol
     const hdlMatch = text.match(/hdl[:\s]+([0-9.]+)\s*(?:mg\/dl)?/i);
-    if (hdlMatch) {
+    if (hdlMatch && hdlMatch[1]) {
       const value = parseFloat(hdlMatch[1]);
       values.push({
         name: 'HDL Cholesterol',
@@ -141,20 +147,20 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // LDL cholesterol
     const ldlMatch = text.match(/ldl[:\s]+([0-9.]+)\s*(?:mg\/dl)?/i);
-    if (ldlMatch) {
+    if (ldlMatch && ldlMatch[1]) {
       const value = parseFloat(ldlMatch[1]);
       values.push({
         name: 'LDL Cholesterol',
         value: ldlMatch[1],
         unit: 'mg/dL',
         referenceRange: '<100',
-        flag: value < 100 ? 'normal' : value < 160 ? 'high' : 'critical',
+        flag: value < 100 ? 'normal' : 'high',
       });
     }
 
     // White blood cell count
     const wbcMatch = text.match(/(?:wbc|white blood cell)[:\s]+([0-9.]+)\s*(?:k\/ul)?/i);
-    if (wbcMatch) {
+    if (wbcMatch && wbcMatch[1]) {
       const value = parseFloat(wbcMatch[1]);
       values.push({
         name: 'WBC',
@@ -180,7 +186,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Impression section
     const impressionMatch = text.match(/impression[:\s]+(.*?)(?:\n\n|$)/is);
-    if (impressionMatch) {
+    if (impressionMatch && impressionMatch[1]) {
       findings.push({
         category: 'Imaging Impression',
         description: impressionMatch[1].trim(),
@@ -190,7 +196,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Findings section
     const findingsMatch = text.match(/findings[:\s]+(.*?)(?:\n\n|impression|$)/is);
-    if (findingsMatch) {
+    if (findingsMatch && findingsMatch[1]) {
       findings.push({
         category: 'Imaging Findings',
         description: findingsMatch[1].trim(),
@@ -239,7 +245,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Diagnosis patterns
     const diagnosisMatch = text.match(/diagnosis[:\s]+(.*?)(?:\n\n|$)/is);
-    if (diagnosisMatch) {
+    if (diagnosisMatch && diagnosisMatch[1]) {
       const diagnosisText = diagnosisMatch[1].trim();
       diagnoses.push({
         description: diagnosisText,
@@ -249,7 +255,7 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
 
     // Specimen info
     const specimenMatch = text.match(/specimen[:\s]+(.*?)(?:\n\n|$)/is);
-    if (specimenMatch) {
+    if (specimenMatch && specimenMatch[1]) {
       findings.push({
         category: 'Specimen',
         description: specimenMatch[1].trim(),
@@ -300,10 +306,14 @@ export class MockAnalysisEngine implements AnalysisEnginePort {
     for (const pattern of medPatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
-        medications.push({
-          name: match[0].split(/\s+/)[0],
-          dosage: match[1] || undefined,
-        });
+        const parts = match[0].split(/\s+/);
+        if (parts[0]) {
+          medications.push({
+            name: parts[0],
+            dosage: match[1] || 'unknown',
+            frequency: 'unknown',
+          });
+        }
       }
     }
 

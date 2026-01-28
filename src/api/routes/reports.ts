@@ -24,12 +24,13 @@ const upload = multer({
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'image/jpeg',
       'image/png',
+      'text/plain', // For testing analysis with lab reports
     ];
 
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only PDF, DOCX, JPEG, and PNG are allowed'));
+      cb(new Error('Invalid file type. Only PDF, DOCX, JPEG, PNG, and TXT are allowed'));
     }
   },
 });

@@ -1,54 +1,30 @@
 import { BaseEntity } from './BaseEntity';
+import { 
+  ExtractedData, 
+  TrendIndicators 
+} from '@domain/ports/AnalysisEnginePort';
 
 /**
  * Analysis: Domain entity representing automated medical report analysis
  * 
  * Captures structured medical findings extracted from reports, including
  * lab values, diagnoses, medications, and trend indicators.
+ * 
+ * Uses types from AnalysisEnginePort for consistency.
  */
-
-export interface LabValue {
-  name: string;
-  value: string;
-  unit: string;
-  referenceRange?: string;
-  flag?: 'normal' | 'high' | 'low' | 'critical';
-}
-
-export interface Diagnosis {
-  code?: string;
-  description: string;
-  confidence: number;
-}
-
-export interface Medication {
-  name: string;
-  dosage?: string;
-  frequency?: string;
-}
-
-export interface Finding {
-  category: string;
-  description: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
-}
-
-export interface ExtractedData {
-  labValues?: LabValue[];
-  diagnoses?: Diagnosis[];
-  medications?: Medication[];
-  findings?: Finding[];
-}
-
-export interface TrendIndicators {
-  improving?: string[];
-  declining?: string[];
-  stable?: string[];
-  recurring?: string[];
-}
 
 export type AnalysisMethod = 'mock' | 'openai-gpt4' | 'anthropic-claude' | 'local-llm';
 export type CompletionStatus = 'complete' | 'partial' | 'failed';
+
+// Re-export port types for convenience
+export type { 
+  LabValue,
+  Diagnosis, 
+  Medication,
+  Finding,
+  ExtractedData,
+  TrendIndicators
+} from '@domain/ports/AnalysisEnginePort';
 
 export class Analysis extends BaseEntity {
   constructor(

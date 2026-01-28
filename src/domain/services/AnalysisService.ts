@@ -1,5 +1,5 @@
-import { Analysis, ExtractedData, TrendIndicators } from '@domain/entities/Analysis';
-import { AnalysisResult } from '@domain/entities/AnalysisResult';
+import { Analysis, ExtractedData, TrendIndicators, AnalysisMethod } from '@domain/entities/Analysis';
+import { AnalysisResult as AnalysisResultPort } from '@domain/ports/AnalysisEnginePort';
 import { AnalysisRepositoryPort } from '@domain/ports/AnalysisRepository';
 import { ReportRepositoryPort } from '@domain/ports/ReportRepository';
 import { AnalysisEnginePort } from '@domain/ports/AnalysisEnginePort';
@@ -42,7 +42,7 @@ export class AnalysisService {
     }
 
     // Run analysis engine
-    let analysisResult: AnalysisResult;
+    let analysisResult: AnalysisResultPort;
     try {
       analysisResult = await this.analysisEngine.analyze(fileBuffer, fileName, report.fileFormat);
     } catch (error: any) {
@@ -97,7 +97,7 @@ export class AnalysisService {
       mergedTrends,
       analysisResult.confidenceScore,
       analysisResult.summaryText,
-      this.analysisEngine.getMethod(),
+      this.analysisEngine.getEngineType() as AnalysisMethod,
       analysisResult.completionStatus,
       new Date(),
       analysisResult.errorDetails
@@ -111,6 +111,13 @@ export class AnalysisService {
 
     // Persist
     return await this.analysisRepository.create(analysis);
+  }
+
+  /**
+   * Find analysis by ID
+   */
+  async findById(id: string): Promise<Analysis | null> {
+    return await this.analysisRepository.findById(id);
   }
 
   /**

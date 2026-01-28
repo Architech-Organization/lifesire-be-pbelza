@@ -20,7 +20,10 @@ export class AnalysisController {
    * Analyze a medical report
    */
   analyzeReport = async (req: Request, res: Response): Promise<void> => {
-    const { id: reportId } = req.params;
+    const reportId = req.params['id'];
+    if (!reportId) {
+      throw new NotFoundError('Report ID is required');
+    }
 
     // Get the report
     const report = await this.reportService.findById(reportId);
@@ -29,13 +32,13 @@ export class AnalysisController {
     }
 
     // Download file for analysis
-    const fileBuffer = await this.reportService.downloadFile(reportId);
+    const { buffer, fileName } = await this.reportService.downloadFile(reportId);
 
     // Run analysis
     const analysis = await this.analysisService.analyzeReport(
       reportId,
-      fileBuffer,
-      report.fileName
+      buffer,
+      fileName
     );
 
     // Return response
@@ -49,7 +52,10 @@ export class AnalysisController {
    * Get analysis for a report
    */
   getAnalysis = async (req: Request, res: Response): Promise<void> => {
-    const { id: reportId } = req.params;
+    const reportId = req.params['id'];
+    if (!reportId) {
+      throw new NotFoundError('Report ID is required');
+    }
 
     const analysis = await this.analysisService.findByReportId(reportId);
     if (!analysis) {
@@ -66,9 +72,12 @@ export class AnalysisController {
    * Get analysis by ID
    */
   getById = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
+    const id = req.params['id'];
+    if (!id) {
+      throw new NotFoundError('Analysis ID is required');
+    }
 
-    const analysis = await this.analysisService.findByReportId(id);
+    const analysis = await this.analysisService.findById(id);
     if (!analysis) {
       throw new NotFoundError('Analysis not found');
     }

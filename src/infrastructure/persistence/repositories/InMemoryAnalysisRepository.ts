@@ -27,7 +27,7 @@ export class InMemoryAnalysisRepository implements AnalysisRepositoryPort {
     return null;
   }
 
-  async findByPatient(patientId: string): Promise<Analysis[]> {
+  async findByPatient(_patientId: string): Promise<Analysis[]> {
     // Note: Cannot directly query by patient without report references
     // This would need to be implemented with report repository
     return [];
