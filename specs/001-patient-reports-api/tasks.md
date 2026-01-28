@@ -102,27 +102,27 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 2
 
-- [ ] T034 [P] [US2] Create Report domain entity in src/domain/entities/Report.ts with id, patientId, reportDate, fileName, fileHash, fileSize per data-model.md
-- [ ] T035 [P] [US2] Create FileReference value object in src/domain/entities/FileReference.ts
-- [ ] T036 [US2] Implement ReportService in src/domain/services/ReportService.ts with upload, findByPatient, findById, downloadFile, checkDuplicate methods
+- [X] T034 [P] [US2] Create Report domain entity in src/domain/entities/Report.ts with id, patientId, reportDate, fileName, fileHash, fileSize per data-model.md
+- [X] T035 [P] [US2] Create FileReference value object in src/domain/entities/FileReference.ts
+- [X] T036 [US2] Implement ReportService in src/domain/services/ReportService.ts with upload, findByPatient, findById, downloadFile, checkDuplicate methods
 
 ### Infrastructure Layer for User Story 2
 
-- [ ] T037 [P] [US2] Create ReportEntity TypeORM entity in src/infrastructure/persistence/entities/ReportEntity.ts per data-model.md schema
-- [ ] T038 [US2] Generate TypeORM migration CreateReportsTable in migrations/ per data-model.md with file_hash unique index
-- [ ] T039 [US2] Implement InMemoryReportRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryReportRepository.ts
-- [ ] T040 [US2] Implement TypeORMReportRepository production adapter in src/infrastructure/persistence/repositories/TypeORMReportRepository.ts
-- [ ] T041 [P] [US2] Implement MockFileStorage adapter in src/infrastructure/storage/MockFileStorage.ts with in-memory buffer storage
-- [ ] T042 [US2] Implement LocalFileStorage production adapter in src/infrastructure/storage/LocalFileStorage.ts with SHA-256 hash calculation
+- [X] T037 [P] [US2] Create ReportEntity TypeORM entity in src/infrastructure/persistence/entities/ReportEntity.ts per data-model.md schema
+- [X] T038 [US2] Generate TypeORM migration CreateReportsTable in migrations/ per data-model.md with file_hash unique index
+- [X] T039 [US2] Implement InMemoryReportRepository mock adapter in src/infrastructure/persistence/repositories/InMemoryReportRepository.ts
+- [X] T040 [US2] Implement TypeORMReportRepository production adapter in src/infrastructure/persistence/repositories/TypeORMReportRepository.ts
+- [X] T041 [P] [US2] Implement MockFileStorage adapter in src/infrastructure/storage/MockFileStorage.ts with in-memory buffer storage
+- [X] T042 [US2] Implement LocalFileStorage production adapter in src/infrastructure/storage/LocalFileStorage.ts with SHA-256 hash calculation
 
 ### API Layer for User Story 2
 
-- [ ] T043 [P] [US2] Create UploadReportDto in src/api/dto/UploadReportDto.ts with multipart validation
-- [ ] T044 [P] [US2] Create ReportResponseDto in src/api/dto/ReportResponseDto.ts
-- [ ] T045 [US2] Implement ReportController in src/api/controllers/ReportController.ts with upload, listByPatient, getById, downloadFile handlers
-- [ ] T046 [US2] Create report routes in src/api/routes/reports.ts per openapi.yaml with Multer middleware for file uploads
-- [ ] T047 [US2] Add duplicate detection logic in ReportService using fileHash comparison
-- [ ] T048 [US2] Add file type validation (PDF, DOCX, JPEG, PNG) in file upload middleware
+- [X] T043 [P] [US2] Create UploadReportDto in src/api/dto/UploadReportDto.ts with multipart validation
+- [X] T044 [P] [US2] Create ReportResponseDto in src/api/dto/ReportResponseDto.ts
+- [X] T045 [US2] Implement ReportController in src/api/controllers/ReportController.ts with upload, listByPatient, getById, downloadFile handlers
+- [X] T046 [US2] Create report routes in src/api/routes/reports.ts per openapi.yaml with Multer middleware for file uploads
+- [X] T047 [US2] Add duplicate detection logic in ReportService using fileHash comparison
+- [X] T048 [US2] Add file type validation (PDF, DOCX, JPEG, PNG) in file upload middleware
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - patients can be created and reports uploaded
 

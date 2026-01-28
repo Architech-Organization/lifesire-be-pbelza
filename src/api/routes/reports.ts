@@ -8,7 +8,7 @@ import { LocalFileStorage } from '@infrastructure/storage/LocalFileStorage';
 import { asyncHandler } from '@api/middleware/errorHandler';
 import { validateBody } from '@api/middleware/validation';
 import { UploadReportDto } from '@api/dto/UploadReportDto';
-import { AppDataSource } from '@infrastructure/config/database';
+import { getDataSourceSync } from '@infrastructure/config/database';
 import path from 'path';
 
 // Multer configuration for file uploads
@@ -40,8 +40,9 @@ const upload = multer({
 function createController(): ReportController {
   const storagePath = path.join(process.cwd(), 'data', 'uploads');
   const fileStorage = new LocalFileStorage(storagePath);
-  const reportRepository = new TypeORMReportRepository(AppDataSource);
-  const patientRepository = new TypeORMPatientRepository(AppDataSource);
+  const dataSource = getDataSourceSync();
+  const reportRepository = new TypeORMReportRepository(dataSource);
+  const patientRepository = new TypeORMPatientRepository(dataSource);
   const reportService = new ReportService(reportRepository, patientRepository, fileStorage);
   return new ReportController(reportService);
 }

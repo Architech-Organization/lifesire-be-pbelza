@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreatePatientsTable1738073000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -61,7 +61,7 @@ export class CreatePatientsTable1738073000000 implements MigrationInterface {
     // Create indexes
     await queryRunner.createIndex(
       'patients',
-      new Index({
+      new TableIndex({
         name: 'idx_patients_mrn',
         columnNames: ['medical_record_number'],
         isUnique: true,
@@ -70,7 +70,7 @@ export class CreatePatientsTable1738073000000 implements MigrationInterface {
 
     await queryRunner.createIndex(
       'patients',
-      new Index({
+      new TableIndex({
         name: 'idx_patients_deleted',
         columnNames: ['deleted_at'],
       })
@@ -78,7 +78,7 @@ export class CreatePatientsTable1738073000000 implements MigrationInterface {
 
     await queryRunner.createIndex(
       'patients',
-      new Index({
+      new TableIndex({
         name: 'idx_patients_name',
         columnNames: ['name'],
       })

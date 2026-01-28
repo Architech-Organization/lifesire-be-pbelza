@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import 'reflect-metadata';
 import { createApp } from '@api/app';
 import { Config } from '@infrastructure/config/Config';

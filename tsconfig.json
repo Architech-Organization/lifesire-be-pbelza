@@ -17,6 +17,7 @@
     
     /* Emit */
     "outDir": "./dist",
+    "rootDir": ".",
     "sourceMap": true,
     "removeComments": true,
     "importHelpers": true,
@@ -51,7 +52,8 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "migrations/**/*"
   ],
   "exclude": [
     "node_modules",

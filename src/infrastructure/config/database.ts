@@ -12,15 +12,21 @@ import { Config } from './Config';
 export function createDataSourceConfig(): DataSourceOptions {
   const config = Config.getInstance();
   const dbType = config.get('DB_TYPE');
+  const isDev = config.get('NODE_ENV') === 'development';
+  
+  // Use .ts files in dev, .js files in production (compiled)
+  const ext = process.env['TS_NODE'] || process.argv.some(arg => arg.includes('ts-node')) ? 'ts' : 'js';
+  const srcDir = ext === 'ts' ? 'src' : 'dist/src';
+  const migrationDir = ext === 'ts' ? 'migrations' : 'dist/migrations';
 
   if (dbType === 'sqlite') {
     return {
       type: 'better-sqlite3',
       database: config.get('SQLITE_DB_PATH') || ':memory:',
-      synchronize: config.get('NODE_ENV') === 'development',
-      logging: config.get('NODE_ENV') === 'development',
-      entities: ['src/infrastructure/persistence/entities/**/*.ts'],
-      migrations: ['migrations/**/*.ts'],
+      synchronize: isDev,
+      logging: isDev,
+      entities: [`${srcDir}/infrastructure/persistence/entities/**/*.${ext}`],
+      migrations: [`${migrationDir}/**/*.${ext}`],
     };
   }
 
@@ -32,10 +38,10 @@ export function createDataSourceConfig(): DataSourceOptions {
     username: config.get('POSTGRES_USER'),
     password: config.get('POSTGRES_PASSWORD'),
     database: config.get('POSTGRES_DB'),
-    synchronize: config.get('NODE_ENV') === 'development',
-    logging: config.get('NODE_ENV') === 'development',
-    entities: ['src/infrastructure/persistence/entities/**/*.ts'],
-    migrations: ['migrations/**/*.ts'],
+    synchronize: isDev,
+    logging: isDev,
+    entities: [`${srcDir}/infrastructure/persistence/entities/**/*.${ext}`],
+    migrations: [`${migrationDir}/**/*.${ext}`],
   };
 }
 
@@ -71,3 +77,14 @@ export async function closeDataSource(): Promise<void> {
  * Export default DataSource for TypeORM CLI
  */
 export const AppDataSource = new DataSource(createDataSourceConfig());
+
+/**
+ * Get the singleton DataSource instance synchronously
+ * WARNING: Only use this after getDataSource() has been called to initialize
+ */
+export function getDataSourceSync(): DataSource {
+  if (!dataSourceInstance) {
+    throw new Error('DataSource not initialized. Call getDataSource() first.');
+  }
+  return dataSourceInstance;
+}
