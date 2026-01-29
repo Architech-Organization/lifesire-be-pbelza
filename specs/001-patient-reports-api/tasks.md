@@ -202,17 +202,17 @@ Single backend project at repository root:
 
 ### Domain Layer for User Story 5
 
-- [ ] T077 [P] [US5] Create PatientSummary value object in src/domain/entities/PatientSummary.ts with timeline structure per openapi.yaml
-- [ ] T078 [P] [US5] Create TimelineEvent value object in src/domain/entities/TimelineEvent.ts
-- [ ] T079 [US5] Implement SummaryService in src/domain/services/SummaryService.ts with generateSummary, applyFilters, highlightCriticalFindings methods
+- [X] T077 [P] [US5] Create PatientSummary value object in src/domain/entities/PatientSummary.ts with timeline structure per openapi.yaml
+- [X] T078 [P] [US5] Create TimelineEvent value object in src/domain/entities/TimelineEvent.ts
+- [X] T079 [US5] Implement SummaryService in src/domain/services/SummaryService.ts with generateSummary, applyFilters, highlightCriticalFindings methods
 
 ### API Layer for User Story 5
 
-- [ ] T080 [P] [US5] Create PatientSummaryResponseDto in src/api/dto/PatientSummaryResponseDto.ts
-- [ ] T081 [P] [US5] Create SummaryQueryDto in src/api/dto/SummaryQueryDto.ts with date range filters
-- [ ] T082 [US5] Implement summary handler in PatientController using SummaryService
-- [ ] T083 [US5] Add summary route GET /patients/:id/summary to src/api/routes/patients.ts per openapi.yaml
-- [ ] T084 [US5] Add critical findings highlighting logic in SummaryService based on analysis confidence scores
+- [X] T080 [P] [US5] Create PatientSummaryResponseDto in src/api/dto/PatientSummaryResponseDto.ts
+- [X] T081 [P] [US5] Create SummaryQueryDto in src/api/dto/SummaryQueryDto.ts with date range filters
+- [X] T082 [US5] Implement summary handler in PatientController using SummaryService
+- [X] T083 [US5] Add summary route GET /patients/:id/summary to src/api/routes/patients.ts per openapi.yaml
+- [X] T084 [US5] Add critical findings highlighting logic in SummaryService based on analysis confidence scores
 
 **Checkpoint**: All user stories should now be independently functional - complete MVP delivered
 

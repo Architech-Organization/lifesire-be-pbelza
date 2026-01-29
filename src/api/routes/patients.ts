@@ -1,11 +1,16 @@
 import { Router } from 'express';
 import { PatientController } from '@api/controllers/PatientController';
 import { PatientService } from '@domain/services/PatientService';
-import { validateBody } from '@api/middleware/validation';
+import { SummaryService } from '@domain/services/SummaryService';
+import { validateBody, validateQuery } from '@api/middleware/validation';
 import { asyncHandler } from '@api/middleware/errorHandler';
 import { CreatePatientDto } from '@api/dto/CreatePatientDto';
+import { SummaryQueryDto } from '@api/dto/SummaryQueryDto';
 import { getDataSource } from '@infrastructure/config/database';
 import { TypeORMPatientRepository } from '@infrastructure/persistence/repositories/TypeORMPatientRepository';
+import { TypeORMReportRepository } from '@infrastructure/persistence/repositories/TypeORMReportRepository';
+import { TypeORMAnalysisRepository } from '@infrastructure/persistence/repositories/TypeORMAnalysisRepository';
+import { TypeORMClinicalNoteRepository } from '@infrastructure/persistence/repositories/TypeORMClinicalNoteRepository';
 
 /**
  * Patient routes
@@ -18,9 +23,20 @@ const router = Router();
 // Dependency injection - create service with repository
 const createController = async (): Promise<PatientController> => {
   const dataSource = await getDataSource();
-  const repository = new TypeORMPatientRepository(dataSource);
-  const service = new PatientService(repository);
-  return new PatientController(service);
+  const patientRepository = new TypeORMPatientRepository(dataSource);
+  const reportRepository = new TypeORMReportRepository(dataSource);
+  const analysisRepository = new TypeORMAnalysisRepository(dataSource);
+  const noteRepository = new TypeORMClinicalNoteRepository(dataSource);
+  
+  const patientService = new PatientService(patientRepository);
+  const summaryService = new SummaryService(
+    patientRepository,
+    reportRepository,
+    analysisRepository,
+    noteRepository
+  );
+  
+  return new PatientController(patientService, summaryService);
 };
 
 // GET /patients/search - must be before /:id to avoid route conflicts
@@ -57,6 +73,16 @@ router.get(
   asyncHandler(async (req, res) => {
     const controller = await createController();
     await controller.getById(req, res);
+  })
+);
+
+// GET /patients/:id/summary
+router.get(
+  '/:id/summary',
+  validateQuery(SummaryQueryDto),
+  asyncHandler(async (req, res) => {
+    const controller = await createController();
+    await controller.getSummary(req, res);
   })
 );
 

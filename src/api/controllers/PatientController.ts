@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import { PatientService } from '@domain/services/PatientService';
+import { SummaryService } from '@domain/services/SummaryService';
 import { CreatePatientDto } from '@api/dto/CreatePatientDto';
 import { PatientResponseDto } from '@api/dto/PatientResponseDto';
+import { PatientSummaryResponseDto } from '@api/dto/PatientSummaryResponseDto';
+import { SummaryQueryDto } from '@api/dto/SummaryQueryDto';
 import { NotFoundError } from '@api/middleware/errorHandler';
 
 /**
@@ -10,7 +13,10 @@ import { NotFoundError } from '@api/middleware/errorHandler';
  * Orchestrates between HTTP layer and domain service.
  */
 export class PatientController {
-  constructor(private readonly patientService: PatientService) {}
+  constructor(
+    private readonly patientService: PatientService,
+    private readonly summaryService?: SummaryService
+  ) {}
 
   /**
    * POST /patients - Create new patient
@@ -158,5 +164,35 @@ export class PatientController {
 
     await this.patientService.delete(id);
     res.status(204).send();
+  }
+
+  /**
+   * GET /patients/:id/summary - Get comprehensive patient summary
+   */
+  async getSummary(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const query = req.query as unknown as SummaryQueryDto;
+
+    if (!id) {
+      res.status(400).json({
+        error: { message: 'Patient ID is required', statusCode: 400 },
+      });
+      return;
+    }
+
+    if (!this.summaryService) {
+      res.status(500).json({
+        error: { message: 'Summary service not configured', statusCode: 500 },
+      });
+      return;
+    }
+
+    // Parse date filters
+    const startDate = query.startDate ? new Date(query.startDate) : undefined;
+    const endDate = query.endDate ? new Date(query.endDate) : undefined;
+
+    const summary = await this.summaryService.generateSummary(id, startDate, endDate);
+    const response = new PatientSummaryResponseDto(summary);
+    res.status(200).json({ data: response });
   }
 }
