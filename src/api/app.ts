@@ -1,6 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import { Config } from '@infrastructure/config/Config';
 import { errorHandler } from '@api/middleware/errorHandler';
+import { requestLogger } from '@api/middleware/requestLogger';
+import { sanitizeInput, rateLimiter } from '@api/middleware/security';
 import healthRouter from '@api/routes/health';
 import swaggerRouter from '@api/routes/swagger';
 import patientRouter from '@api/routes/patients';
@@ -12,6 +14,9 @@ import noteRouter from '@api/routes/notes';
  * Express application bootstrap
  * 
  * Creates and configures Express app with:
+ * - Request logging (pino)
+ * - Input sanitization
+ * - Rate limiting
  * - JSON body parser
  * - Health check route
  * - API versioning (v1)
@@ -23,7 +28,14 @@ export function createApp(): Express {
   const config = Config.getInstance();
   const apiVersion = config.getOrDefault('API_VERSION', 'v1');
 
-  // Middleware
+  // Security middleware (T090, T091)
+  app.use(rateLimiter);
+  app.use(sanitizeInput);
+
+  // Request logging (T085)
+  app.use(requestLogger);
+
+  // Body parsing middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
