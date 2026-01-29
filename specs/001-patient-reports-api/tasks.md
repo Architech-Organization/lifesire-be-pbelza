@@ -224,15 +224,15 @@ Single backend project at repository root:
 
 - [ ] T085 [P] Add request logging middleware with pino structured logging in src/api/middleware/requestLogger.ts
 - [X] T086 [P] Add OpenAPI documentation serving with Swagger UI at /api-docs endpoint
-- [ ] T087 [P] Create Dockerfile with multi-stage build per plan.md deployment considerations
-- [ ] T088 Add database connection health check in health endpoint
-- [ ] T089 Add file storage health check in health endpoint
+- [X] T087 [P] Create Dockerfile with multi-stage build per plan.md deployment considerations
+- [X] T088 Add database connection health check in health endpoint
+- [X] T089 Add file storage health check in health endpoint
 - [ ] T090 [P] Add input sanitization for all string fields to prevent injection attacks [Maps to FR-033]
 - [ ] T091 [P] Add rate limiting middleware for API endpoints (basic express-rate-limit)
-- [ ] T092 Validate all environment variables at startup in Config.ts
-- [ ] T093 [P] Add graceful shutdown handling in index.ts for SIGTERM/SIGINT
-- [ ] T094 Run database migrations automatically on startup in production mode
-- [ ] T095 [P] Add API versioning support (v1 prefix) consistently across all routes
+- [X] T092 Validate all environment variables at startup in Config.ts
+- [X] T093 [P] Add graceful shutdown handling in index.ts for SIGTERM/SIGINT
+- [X] T094 Run database migrations automatically on startup in production mode
+- [X] T095 [P] Add API versioning support (v1 prefix) consistently across all routes
 - [ ] T096 Create example requests file (curl/Postman) based on quickstart.md examples
 - [ ] T097 Validate hexagonal architecture boundaries with ESLint (domain has no infrastructure imports)
 - [ ] T098 Run quickstart.md validation with Docker Compose setup

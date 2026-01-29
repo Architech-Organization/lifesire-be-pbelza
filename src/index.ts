@@ -27,8 +27,17 @@ async function bootstrap() {
 
     // Initialize database connection
     console.log('[Bootstrap] Connecting to database...');
-    await getDataSource();
+    const dataSource = await getDataSource();
     console.log('[Bootstrap] Database connected');
+
+    // Run migrations automatically in production (T094)
+    if (config.isProduction()) {
+      console.log('[Bootstrap] Running database migrations...');
+      await dataSource.runMigrations();
+      console.log('[Bootstrap] Migrations completed');
+    } else {
+      console.log('[Bootstrap] Skipping migrations in development mode');
+    }
 
     // Create Express app
     const app = createApp();

@@ -80,7 +80,7 @@ export class Config {
   }
 
   /**
-   * Validate required configuration keys
+   * Validate required configuration keys (T092)
    */
   private validateRequired(): void {
     const required = [
@@ -95,10 +95,22 @@ export class Config {
       required.push('POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD');
     }
 
+    // Validate required keys exist
     const missing = required.filter(key => !this.config.has(key) || this.get(key) === '');
     
     if (missing.length > 0) {
       throw new Error(`Missing required configuration: ${missing.join(', ')}`);
+    }
+
+    // Validate PORT is a number
+    const port = this.getNumber('PORT');
+    if (isNaN(port) || port < 1 || port > 65535) {
+      throw new Error('PORT must be a valid number between 1 and 65535');
+    }
+
+    // Validate UPLOAD_PATH is set
+    if (!this.config.has('UPLOAD_PATH') || !this.get('UPLOAD_PATH')) {
+      console.warn('UPLOAD_PATH not set, using default: ./data/uploads');
     }
   }
 }
